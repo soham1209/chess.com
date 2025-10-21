@@ -1,3 +1,4 @@
+//GameManager.ts
 import { WebSocket } from "ws";
 import { INIT_GAME } from "./Messages";
 import { Game } from "./Game";
@@ -6,6 +7,7 @@ export class GameManager {
   private games: Game[];
   private pendingUser: WebSocket | null = null;
   private users: WebSocket[];
+
   constructor() {
     // GameManager initialization code here
     this.games = [];
@@ -46,7 +48,6 @@ export class GameManager {
         if(game){
           game.makeMove(socket, message.move);
         } 
-
       }
     });
   }

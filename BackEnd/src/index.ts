@@ -1,3 +1,4 @@
+//index.ts
 import { WebSocketServer } from "ws";
 import { GameManager } from "./GameManager";
 

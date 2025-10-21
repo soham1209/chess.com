@@ -1,3 +1,4 @@
+//Game.ts
 import { Chess } from "chess.js";
 import { WebSocket } from "ws";
 import { GAME_OVER, INIT_GAME, MOVE } from "./Messages";
@@ -14,6 +15,7 @@ export class Game {
     this.player2 = player2;
     this.board = new Chess();
     this.startTime = new Date();
+    console.log("New game started between two players.");
     this.player1.send(
       JSON.stringify({
         type: INIT_GAME,
@@ -30,16 +32,9 @@ export class Game {
         },
       })
     );
-    this.player2.send(
-      JSON.stringify({
-        type: INIT_GAME,
-        payload: {
-          color: "black",
-        },
-      })
-    );
+
   }
-  
+
   makeMove(socket: WebSocket, move: { from: string; to: string }) {
     // Logic to update the game state with the new move
     //make validaion here
