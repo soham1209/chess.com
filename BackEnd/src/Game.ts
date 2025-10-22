@@ -7,8 +7,8 @@ export class Game {
   public player1: WebSocket;
   public player2: WebSocket;
   public board: Chess;
-
   private startTime: Date;
+  private moveCount: number = 0;
 
   constructor(player1: WebSocket, player2: WebSocket) {
     this.player1 = player1;
@@ -39,24 +39,30 @@ export class Game {
     // Logic to update the game state with the new move
     //make validaion here
 
-    if (this.board.moves.length % 2 === 0 && socket !== this.player1) {
+    console.log("Making move:", move);
+    if (this.moveCount % 2 === 0 && socket !== this.player1) {
       //not player1 turn
+      console.log("Not player1's turn");
       return;
     }
-    if (this.board.moves.length % 2 === 1 && socket !== this.player2) {
+    if (this.moveCount % 2 === 1 && socket !== this.player2) {
       //not player2 turn
+      console.log("Not player2's turn");
       return;
     }
 
+    console.log("Before move, board state:", this.board.fen());
     try {
       this.board.move(move);
     } catch (e) {
       console.error("Invalid move:", e);
+      return;
     }
 
+    console.log("Move made:", move);
     if (this.board.isGameOver()) {
       //handle game over
-      this.player1.emit(
+      this.player1.send(
         JSON.stringify({
           type: GAME_OVER,
           payload: {
@@ -64,7 +70,7 @@ export class Game {
           },
         })
       );
-      this.player2.emit(
+      this.player2.send(
         JSON.stringify({
           type: GAME_OVER,
           payload: {
@@ -74,9 +80,11 @@ export class Game {
       );
       console.log("Game Over");
     }
-    if (this.board.moves.length % 2 === 0) {
+
+    console.log("After move, board state:", this.board.fen());
+    if (this.moveCount % 2 === 0) {
       //player2 turn
-      this.player2.emit(
+      this.player2.send(
         JSON.stringify({
           type: MOVE,
           payload: move,
@@ -84,12 +92,13 @@ export class Game {
       );
     } else {
       //player1 turn
-      this.player1.emit(
+      this.player1.send(
         JSON.stringify({
           type: MOVE,
           payload: move,
         })
       );
     }
+    this.moveCount++;
   }
 }
